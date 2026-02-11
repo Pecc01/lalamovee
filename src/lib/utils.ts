@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { TrackingData } from "@/lib/tracking";
+import { cloudEnabled } from "@/lib/cloud";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,7 +32,11 @@ export function decodeTrackingData(base64: string): TrackingData | null {
 }
 
 export function buildShareLink(data: TrackingData): string {
+  const base = import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
+  if (cloudEnabled) {
+    const code = (data.code || "").toUpperCase();
+    return `${base}/?code=${encodeURIComponent(code)}`;
+  }
   const payload = encodeTrackingData(data);
-  const origin = window.location.origin;
-  return `${origin}/?data=${encodeURIComponent(payload)}`;
+  return `${base}/?data=${encodeURIComponent(payload)}`;
 }

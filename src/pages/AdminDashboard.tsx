@@ -181,14 +181,22 @@ const AdminDashboard = () => {
 
   const handleShare = (pkg: TrackingData) => {
     const link = buildShareLink(pkg);
-    navigator.clipboard.writeText(link).then(
-      () => {
-        toast({ title: "Link de rastreio copiado", description: "Envie ao cliente para visualizar" });
-      },
-      () => {
-        toast({ title: "Falha ao copiar link", description: link, variant: "destructive" });
-      }
-    );
+    const shareSupported = !!(navigator as any).share;
+    if (shareSupported) {
+      (navigator as any).share({ title: "Rastreio", text: "Acompanhe seu pedido", url: link })
+        .then(() => {
+          toast({ title: "Link compartilhado" });
+        })
+        .catch(() => {
+          navigator.clipboard.writeText(link)
+            .then(() => toast({ title: "Link copiado", description: link }))
+            .catch(() => toast({ title: "Copie este link", description: link, variant: "destructive" }));
+        });
+      return;
+    }
+    navigator.clipboard.writeText(link)
+      .then(() => toast({ title: "Link copiado", description: link }))
+      .catch(() => toast({ title: "Copie este link", description: link, variant: "destructive" }));
   };
 
   const handleAddStep = () => {

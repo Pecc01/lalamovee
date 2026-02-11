@@ -13,7 +13,7 @@ export async function fetchTrackingByCode(code: string): Promise<TrackingData | 
   const { data, error } = await supabase
     .from("tracking")
     .select("data")
-    .eq("code", code)
+    .eq("code", code.toUpperCase())
     .maybeSingle();
   if (error) return null;
   return (data?.data as TrackingData) ?? null;
@@ -21,7 +21,7 @@ export async function fetchTrackingByCode(code: string): Promise<TrackingData | 
 
 export async function saveTrackingToCloud(tracking: TrackingData): Promise<boolean> {
   if (!cloudEnabled || !supabase) return false;
-  const payload = { code: tracking.code, data: tracking };
+  const payload = { code: tracking.code.toUpperCase(), data: tracking };
   const { error } = await supabase.from("tracking").upsert(payload, { onConflict: "code" });
   return !error;
 }

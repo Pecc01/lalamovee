@@ -23,6 +23,7 @@ const Index = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const dataParam = params.get("data");
+    const codeParam = params.get("code");
     if (dataParam) {
       const decoded = decodeTrackingData(dataParam);
       if (decoded) {
@@ -30,16 +31,20 @@ const Index = () => {
         setIsTrackingOpen(true);
       }
     }
+    if (codeParam) {
+      setTrackingCode(codeParam.toUpperCase());
+      setIsTrackingOpen(true);
+    }
   }, []);
 
   const handleClose = () => {
     setIsTrackingOpen(false);
-    if (sharedData) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("data");
-      window.history.replaceState({}, "", url.toString());
-      setSharedData(null);
-    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete("data");
+    url.searchParams.delete("code");
+    window.history.replaceState({}, "", url.toString());
+    setSharedData(null);
+    setTrackingCode("");
   };
 
   return (
