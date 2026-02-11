@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Edit, Package, MapPin, Clock, Users, Share2, Settings } from "lucide-react";
+import { Plus, Trash2, Edit, Package, MapPin, Clock, Users, Share2, Settings, CloudUpload } from "lucide-react";
 import { 
   getAllTrackingData, 
   saveTrackingData, 
@@ -36,7 +36,7 @@ import { getUsers, createUser, deleteUser, User } from "@/lib/auth";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { buildShareLink } from "@/lib/utils";
-import { saveTrackingToCloud } from "@/lib/cloud";
+import { saveTrackingToCloud, cloudEnabled } from "@/lib/cloud";
 
 const AdminDashboard = () => {
   const [packages, setPackages] = useState<TrackingData[]>([]);
@@ -200,6 +200,37 @@ const AdminDashboard = () => {
     toast({ title: currentPackage ? "Rastreio atualizado" : "Rastreio criado" });
   };
 
+  const handlePublish = async (pkg: TrackingData) => {
+    if (!cloudEnabled) {
+      toast({ title: "Backend não configurado", variant: "destructive" });
+      return;
+    }
+    const ok = await saveTrackingToCloud(pkg);
+    if (ok) {
+      toast({ title: "Publicado no backend", description: pkg.code });
+    } else {
+      toast({ title: "Falha ao publicar", description: pkg.code, variant: "destructive" });
+    }
+  };
+
+  const handlePublishAll = async () => {
+    if (!cloudEnabled) {
+      toast({ title: "Backend não configurado", variant: "destructive" });
+      return;
+    }
+    const list = getAllTrackingData();
+    if (list.length === 0) {
+      toast({ title: "Nenhum rastreio para publicar", variant: "destructive" });
+      return;
+    }
+    let ok = 0;
+    for (const p of list) {
+      const res = await saveTrackingToCloud(p);
+      if (res) ok++;
+    }
+    toast({ title: "Publicação concluída", description: `${ok}/${list.length} publicados` });
+  };
+
   const handleShare = (pkg: TrackingData) => {
     const link = buildShareLink(pkg);
     type NavigatorWithShare = Navigator & { share?: (data: { title?: string; text?: string; url?: string }) => Promise<void> };
@@ -278,6 +309,9 @@ const AdminDashboard = () => {
              <Button variant="outline" onClick={handleOpenConfig}>
               <Settings className="mr-2 h-4 w-4" /> Configurar Link
              </Button>
+             <Button variant="outline" onClick={handlePublishAll}>
+              <CloudUpload className="mr-2 h-4 w-4" /> Publicar Todos
+             </Button>
              <Button variant="outline" onClick={handleLogout}>Sair</Button>
              <Button onClick={openNewPackageDialog} className="bg-[#ff5e1e] hover:bg-[#ff5e1e]/90">
               <Plus className="mr-2 h-4 w-4" /> Novo Rastreio
@@ -309,6 +343,9 @@ const AdminDashboard = () => {
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleShare(pkg)}>
                       <Share2 className="h-4 w-4 text-emerald-600" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handlePublish(pkg)}>
+                      <CloudUpload className="h-4 w-4 text-orange-600" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(pkg.code)}>
                       <Trash2 className="h-4 w-4 text-red-500" />
