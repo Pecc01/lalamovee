@@ -5,6 +5,7 @@ import { getTrackingData } from "@/lib/tracking";
 import type { TrackingData } from "@/lib/tracking";
 import { useEffect, useState } from "react";
 import { fetchTrackingByCode } from "@/lib/cloud";
+import { decodeTrackingData } from "@/lib/utils";
 
 interface TrackingModalProps {
   isOpen: boolean;
@@ -18,10 +19,21 @@ const TrackingModal = ({ isOpen, onClose, trackingCode, trackingData: override }
   
   useEffect(() => {
     let alive = true;
-    if (!override && trackingCode) {
-      fetchTrackingByCode(trackingCode).then((remote) => {
-        if (alive && remote) setResolved(remote);
-      });
+    if (!override) {
+      const params = new URLSearchParams(window.location.search);
+      const dataParam = params.get("data");
+      if (dataParam) {
+        const decoded = decodeTrackingData(dataParam);
+        if (alive && decoded) {
+          setResolved(decoded);
+          return () => { alive = false; };
+        }
+      }
+      if (trackingCode) {
+        fetchTrackingByCode(trackingCode).then((remote) => {
+          if (alive && remote) setResolved(remote);
+        });
+      }
     }
     return () => { alive = false; };
   }, [trackingCode, override]);

@@ -9,7 +9,7 @@ import TrackingModal from "@/components/TrackingModal";
 import { useEffect } from "react";
 import { decodeTrackingData, buildShareLink, normalizeCode } from "@/lib/utils";
 import type { TrackingData } from "@/lib/tracking";
-import { getTrackingData } from "@/lib/tracking";
+import { getTrackingData, getAllTrackingData } from "@/lib/tracking";
 
 const Index = () => {
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
@@ -29,6 +29,7 @@ const Index = () => {
   };
 
   useEffect(() => {
+    getAllTrackingData();
     const params = new URLSearchParams(window.location.search);
     const dataParam = params.get("data");
     const codeParam = params.get("code");
@@ -48,8 +49,14 @@ const Index = () => {
       if (raw) {
         const candidate = normalizeCode(raw);
         if (/^BR\d+$/.test(candidate)) {
-          setTrackingCode(candidate);
-          setIsTrackingOpen(true);
+          const local = getTrackingData(candidate);
+          if (local) {
+            const link = buildShareLink(local);
+            window.location.href = link;
+          } else {
+            setTrackingCode(candidate);
+            setIsTrackingOpen(true);
+          }
         }
       }
     }
