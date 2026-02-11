@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { TrackingData } from "@/lib/tracking";
+import { normalizeCode } from "@/lib/utils";
 import { firebaseEnabled, fbFetchTrackingByCode, fbSaveTrackingToCloud } from "@/lib/firebase";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -15,7 +16,7 @@ const supabase = supabaseEnabled ? createClient(url!, key!) : null;
 export async function fetchTrackingByCode(code: string): Promise<TrackingData | null> {
   if (!cloudEnabled) return null;
   if (supabaseEnabled && supabase) {
-  const normalized = code.trim().toUpperCase();
+  const normalized = normalizeCode(code);
   // Try primary table
   const primaryTable = tableEnv || "tracking";
   const { data, error } = await supabase
@@ -43,7 +44,7 @@ export async function fetchTrackingByCode(code: string): Promise<TrackingData | 
 export async function saveTrackingToCloud(tracking: TrackingData): Promise<boolean> {
   if (!cloudEnabled) return false;
   if (supabaseEnabled && supabase) {
-  const payload = { code: (tracking.code || "").trim().toUpperCase(), data: tracking };
+  const payload = { code: normalizeCode(tracking.code || ""), data: tracking };
   const primaryTable = tableEnv || "tracking";
   const { error } = await supabase.from(primaryTable).upsert(payload, { onConflict: "code" });
   if (!error) return true;

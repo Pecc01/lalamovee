@@ -20,6 +20,7 @@ export interface TrackingData {
 }
 
 const STORAGE_KEY = 'ship-easy-tracking-data';
+import { normalizeCode } from "@/lib/utils";
 
 // Initial mock data to populate if empty
 const INITIAL_DATA: TrackingData[] = [
@@ -146,8 +147,8 @@ const INITIAL_DATA: TrackingData[] = [
 
 export const getTrackingData = (code: string): TrackingData | null => {
   const data = getAllTrackingData();
-  const normalized = code.trim().toUpperCase();
-  return data.find((t) => t.code.toUpperCase() === normalized) || null;
+  const normalized = normalizeCode(code);
+  return data.find((t) => normalizeCode(t.code) === normalized) || null;
 };
 
 export const getAllTrackingData = (): TrackingData[] => {
@@ -157,10 +158,10 @@ export const getAllTrackingData = (): TrackingData[] => {
     return INITIAL_DATA;
   }
   const parsed: TrackingData[] = JSON.parse(stored);
-  const codes = new Set(parsed.map((t) => t.code.toUpperCase()));
+  const codes = new Set(parsed.map((t) => normalizeCode(t.code)));
   let mutated = false;
   for (const seed of INITIAL_DATA) {
-    const code = seed.code.toUpperCase();
+    const code = normalizeCode(seed.code);
     if (!codes.has(code)) {
       parsed.push(seed);
       codes.add(code);
@@ -175,7 +176,7 @@ export const getAllTrackingData = (): TrackingData[] => {
 
 export const saveTrackingData = (tracking: TrackingData) => {
   const data = getAllTrackingData();
-  const index = data.findIndex((t) => t.code.toUpperCase() === (tracking.code || "").toUpperCase());
+  const index = data.findIndex((t) => normalizeCode(t.code) === normalizeCode(tracking.code || ""));
   
   if (index >= 0) {
     data[index] = tracking;
@@ -188,7 +189,7 @@ export const saveTrackingData = (tracking: TrackingData) => {
 
 export const deleteTrackingData = (code: string) => {
   const data = getAllTrackingData();
-  const normalized = code.trim().toUpperCase();
-  const newData = data.filter((t) => t.code.toUpperCase() !== normalized);
+  const normalized = normalizeCode(code);
+  const newData = data.filter((t) => normalizeCode(t.code) !== normalized);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
 };

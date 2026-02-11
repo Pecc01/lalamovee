@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import type { TrackingData } from "@/lib/tracking";
+import { normalizeCode } from "@/lib/utils";
 
 const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY as string | undefined;
 const FIREBASE_AUTH_DOMAIN = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined;
@@ -29,7 +30,7 @@ const db = firebaseEnabled ? getFirestore(app!) : null;
 
 export async function fbFetchTrackingByCode(code: string): Promise<TrackingData | null> {
   if (!firebaseEnabled || !db) return null;
-  const id = code.trim().toUpperCase();
+  const id = normalizeCode(code);
   const ref = doc(db, FIREBASE_COLLECTION, id);
   const snap = await getDoc(ref);
   if (snap.exists()) {
@@ -45,7 +46,7 @@ export async function fbFetchTrackingByCode(code: string): Promise<TrackingData 
 
 export async function fbSaveTrackingToCloud(tracking: TrackingData): Promise<boolean> {
   if (!firebaseEnabled || !db) return false;
-  const id = (tracking.code || "").trim().toUpperCase();
+  const id = normalizeCode(tracking.code || "");
   const ref = doc(db, FIREBASE_COLLECTION, id);
   await setDoc(ref, { data: tracking }, { merge: true });
   return true;

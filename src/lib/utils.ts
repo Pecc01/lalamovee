@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function normalizeCode(input: string): string {
+  return (input || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+}
+
 export function encodeTrackingData(data: TrackingData): string {
   const json = JSON.stringify(data);
   const bytes = new TextEncoder().encode(json);
@@ -38,7 +42,7 @@ export function buildShareLink(data: TrackingData): string {
     if (configured) base = configured;
   }
   if (cloudEnabled) {
-    const code = (data.code || "").trim().toUpperCase();
+    const code = normalizeCode(data.code || "");
     const payload = encodeTrackingData(data);
     return `${base}/?code=${encodeURIComponent(code)}&data=${encodeURIComponent(payload)}`;
   }
