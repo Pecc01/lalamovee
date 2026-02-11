@@ -87,6 +87,61 @@ const INITIAL_DATA: TrackingData[] = [
       },
     ],
   },
+  {
+    code: "BR236472641200023",
+    status: "Postado",
+    currentLocation: "Distribuição lalamove",
+    origin: "Av. Rio das Pedras, 2920 - Jardim Aricanduva, São Paulo",
+    destination: "Rua Atilio Brum 33 Estrada Dos Caboclos - 23040-175",
+    estimatedDelivery: "16/02/2026",
+    steps: [
+      {
+        id: "1",
+        status: "Pedido Recebido",
+        location: "Av. Rio das Pedras, 2920 - Jardim Aricanduva, São Paulo",
+        date: "15/02/2026",
+        time: "08:00",
+        isCompleted: true,
+        isCurrent: false,
+      },
+      {
+        id: "2",
+        status: "Postado",
+        location: "Av. Rio das Pedras, 2920 - Jardim Aricanduva, São Paulo",
+        date: "15/02/2026",
+        time: "10:00",
+        isCompleted: true,
+        isCurrent: false,
+      },
+      {
+        id: "3",
+        status: "Distribuição lalamove",
+        location: "São Paulo, SP - Centro de Distribuição",
+        date: "-",
+        time: "-",
+        isCompleted: false,
+        isCurrent: true,
+      },
+      {
+        id: "4",
+        status: "Saiu para Entrega",
+        location: "Rio de Janeiro, RJ",
+        date: "-",
+        time: "-",
+        isCompleted: false,
+        isCurrent: false,
+      },
+      {
+        id: "5",
+        status: "Entregue",
+        location: "Rio de Janeiro, RJ",
+        date: "-",
+        time: "-",
+        isCompleted: false,
+        isCurrent: false,
+      }
+    ],
+  },
 ];
 
 export const getTrackingData = (code: string): TrackingData | null => {
