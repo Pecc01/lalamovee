@@ -181,9 +181,10 @@ const AdminDashboard = () => {
 
   const handleShare = (pkg: TrackingData) => {
     const link = buildShareLink(pkg);
-    const shareSupported = !!(navigator as any).share;
-    if (shareSupported) {
-      (navigator as any).share({ title: "Rastreio", text: "Acompanhe seu pedido", url: link })
+    type NavigatorWithShare = Navigator & { share?: (data: { title?: string; text?: string; url?: string }) => Promise<void> };
+    const nav = navigator as NavigatorWithShare;
+    if (nav.share) {
+      nav.share({ title: "Rastreio", text: "Acompanhe seu pedido", url: link })
         .then(() => {
           toast({ title: "Link compartilhado" });
         })

@@ -35,7 +35,8 @@ export function buildShareLink(data: TrackingData): string {
   const base = import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
   if (cloudEnabled) {
     const code = (data.code || "").toUpperCase();
-    return `${base}/?code=${encodeURIComponent(code)}`;
+    const payload = encodeTrackingData(data);
+    return `${base}/?code=${encodeURIComponent(code)}&data=${encodeURIComponent(payload)}`;
   }
   const payload = encodeTrackingData(data);
   return `${base}/?data=${encodeURIComponent(payload)}`;
