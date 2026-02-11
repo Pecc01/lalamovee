@@ -154,7 +154,7 @@ const TrackingModal = ({ isOpen, onClose, trackingCode, trackingData: override }
                     className="relative pl-8 pb-8 last:pb-0"
                   >
                     {/* Vertical line */}
-                    {index < trackingData.steps.length - 1 && (
+                    {index < resolved.steps.length - 1 && (
                       <div
                         className={`absolute left-[11px] top-8 w-0.5 h-full ${
                           step.isCompleted ? "bg-primary" : "bg-border"
