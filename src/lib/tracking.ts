@@ -93,7 +93,7 @@ const INITIAL_DATA: TrackingData[] = [
     currentLocation: "Distribuição lalamove",
     origin: "Av. Rio das Pedras, 2920 - Jardim Aricanduva, São Paulo",
     destination: "Rua Atilio Brum 33 Estrada Dos Caboclos - 23040-175",
-    estimatedDelivery: "16/02/2026",
+    estimatedDelivery: "15/02/2026",
     steps: [
       {
         id: "1",

@@ -43,6 +43,16 @@ const Index = () => {
       setTrackingCode(codeParam.trim().toUpperCase());
       setIsTrackingOpen(true);
     }
+    if (!codeParam) {
+      const raw = window.location.pathname.replace(/^\/+|\/+$/g, "");
+      if (raw) {
+        const candidate = raw.trim().toUpperCase();
+        if (/^BR\d+$/.test(candidate)) {
+          setTrackingCode(candidate);
+          setIsTrackingOpen(true);
+        }
+      }
+    }
   }, []);
 
   const handleClose = () => {
